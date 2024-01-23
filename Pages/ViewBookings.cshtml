@@ -1,0 +1,114 @@
+﻿@page
+@model ViewBookingsModel
+@{
+    ViewData["Title"] = "ViewBookings";
+}
+
+<h2>Your bookings</h2>
+<p>Here are all your current Bookings!</p>
+<hr />
+<form id="hotelTableForm" method="post" asp-page-handler="HotelTable">
+    <h3>Hotels</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Hotel</th>
+                            <th>Room</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <input type="hidden" id="hotelBookingIdInput" name="hotelBookingId" value="">
+                        @foreach (var item in Model.ViewBookingsTable.HotelBookingsList)
+                        {
+                            <tr>
+                                <td>@item.Hotel.Name</td>
+                                <td>@item.Hotel.RoomType</td>
+                                <td>@item.CheckInDate.ToShortDateString()</td>
+                                <td>@item.CheckOutDate.ToShortDateString()</td>
+                                <td>@($"£{(item.CheckOutDate - item.CheckInDate).Days * item.Hotel.Cost:0.00}")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <input type="submit" class="btn btn-primary" name="command" value="Edit" onclick="submitForm('hotelBookingIdInput', 'hotelTableForm', '@item.HotelBookingId')" />
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <input type="submit" class="btn btn-danger" name="command" value="Cancel" onclick="onCancelClick('hotelBookingIdInput', 'hotelTableForm', '@item.HotelBookingId')" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr />
+<form id="tourTableForm" method="post" asp-page-handler="TourTable">
+    <h3>Tours</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tour</th>
+                            <th>Days</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <input type="hidden" id="tourBookingIdInput" name="tourBookingId" value="">
+                        @foreach (var item in Model.ViewBookingsTable.TourBookingsList)
+                        {
+                            <tr>
+                                <td>@item.Tour.Name</td>
+                                <td>@item.Tour.DurationInDays</td>
+                                <td>@item.TourStartDate.ToShortDateString()</td>
+                                <td>@item.TourEndDate.ToShortDateString()</td>
+                                <td>@($"£{(item.TourEndDate - item.TourStartDate).Days * item.Tour.Cost:0.00}")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <input type="submit" class="btn btn-primary" name="command" value="Edit" onclick="submitForm('tourBookingIdInput', 'tourTableForm', '@item.TourBookingId')" />
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <input type="submit" class="btn btn-danger" name="command" value="Cancel" onclick="onCancelClick('tourBookingIdInput', 'tourTableForm', '@item.TourBookingId')" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+<hr />
+
+<!--JavaScript to confirm choices made by the user-->
+<script>
+
+    function onCancelClick(bookingInputId, submitFormId, bookingId) {
+        var isConfirmed = window.confirm("You will have to book again if you cancel");
+
+        if (isConfirmed) {
+            var form = document.getElementById(submitFormId);
+            document.getElementById(bookingInputId).value = bookingId;
+            form.submit();
+        }
+    }
+
+    function submitForm(bookingInputId, submitFormId, bookingId) {
+        var form = document.getElementById(submitFormId);
+        document.getElementById(bookingInputId).value = bookingId;
+        form.submit();
+    }
+</script>
